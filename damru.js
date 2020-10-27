@@ -26,23 +26,28 @@ let road={"11": [ "00", "21", "22"],
           "04": [ "24", "13"] 
  }
  let cpyPiecePosition=piecePosition
+ let killMessage
  function movePossible(position,checkingMultikill=false){
    
    position=String(position)
   road[position].forEach(e => {
     if(cpyPiecePosition[e[1]][e[0]]==3&&!checkingMultikill){
       console.log(`can displace ${position} to ${e}`)//can peacefully displace from position to e
+      thinker.postMessage(position+e)
     };
     let canKill=cpyPiecePosition[e[1]][e[0]]==3-cpyPiecePosition[+position[1]][+position[0]]&&cpyPiecePosition[2*+e[1]-+position[1]][2*+e[0]-+position[0]]==3
     if(canKill){
+      
       console.log(`can kill ${e[0]}${e[1]}`);
-
+      if(!checkingMultikill){killMessage=`.${position}${2*+e[0]-+position[0]}`}
+      killMessage+=String(2*+e[1]-+position[1])
       cpyPiecePosition[2*+e[1]-+position[1]][2*+e[0]-+position[0]]=cpyPiecePosition[+position[1]][+position[0]]
       cpyPiecePosition[+position[1]][+position[0]]=3;
       cpyPiecePosition[e[1]][e[0]]=3;
       
      movePossible(String(2*+e[0]-+position[0])+String(2*+e[1]-+position[1]),true)
-    }
+    }else if(!!killMessage){thinker.postMessage(killMessage)}
   });
  }
  
+ const thinker=new Worker('./damru/worker.js');
