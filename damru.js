@@ -50,4 +50,4 @@ let road={"11": [ "00", "21", "22"],
   });
  }
  
- const thinker=new Worker('./damru/worker.js');
+ const thinker=new Worker('worker.js');
