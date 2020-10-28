@@ -46,7 +46,7 @@ let road={"11": [ "00", "21", "22"],
       cpyPiecePosition[e[1]][e[0]]=3;
       
      movePossible(String(2*+e[0]-+position[0])+String(2*+e[1]-+position[1]),true)
-    }else if(!!killMessage){thinker.postMessage(killMessage);killMessage=''}
+    }else if(!!killMessage&&checkingMultikill){thinker.postMessage(killMessage);killMessage=''}
   });
  }
  
