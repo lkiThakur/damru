@@ -28,7 +28,7 @@ let road={"11": [ "00", "21", "22"],
  let cpyPiecePosition=piecePosition
  let killMessage
  function movePossible(position,checkingMultikill=false){
-   
+   if(!checkingMultikill){cpyPiecePosition=piecePosition}
    position=String(position)
   road[position].forEach(e => {
     if(cpyPiecePosition[e[1]][e[0]]==3&&!checkingMultikill){
