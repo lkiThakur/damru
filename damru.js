@@ -4,11 +4,11 @@ let piecePosition=[
     //  [0,0,3,0,0],
     //  [0,2,2,2,0],
     //  [2,0,2,0,2],
-     [1,0,3,0,1],
+     [3,0,1,0,3],
      [0,1,1,1,0],
      [0,0,3,0,0],
-     [0,2,1,2,0],
-     [2,0,2,0,2],
+     [0,1,1,2,0],
+     [2,0,1,0,3],
 ];
 let turnOf=1;
 let road={"11": [ "00", "21", "22"],
@@ -25,28 +25,50 @@ let road={"11": [ "00", "21", "22"],
           "00": [ "20", "11"],
           "04": [ "24", "13"] 
  }
- let cpyPiecePosition=piecePosition
  let killMessage
- function movePossible(position,checkingMultikill=false){
-   if(!checkingMultikill){cpyPiecePosition=piecePosition}
+ function movePossible(position){
    position=String(position)
   road[position].forEach(e => {
-    if(cpyPiecePosition[e[1]][e[0]]==3&&!checkingMultikill){
+    if(piecePosition[e[1]][e[0]]==3){
       console.log(`can displace ${position} to ${e}`)//can peacefully displace from position to e
       thinker.postMessage(position+e)
     };
-    let canKill=cpyPiecePosition[e[1]][e[0]]==3-cpyPiecePosition[+position[1]][+position[0]]&&cpyPiecePosition[2*+e[1]-+position[1]][2*+e[0]-+position[0]]==3
+    let canKill=piecePosition[e[1]][e[0]]==3-piecePosition[+position[1]][+position[0]]&&piecePosition[2*+e[1]-+position[1]][2*+e[0]-+position[0]]==3
     if(canKill){
-      
-      console.log(`can kill ${e[0]}${e[1]}`);
-      killMessage=`.${position}${2*+e[0]-+position[0]}${2*+e[1]-+position[1]}`
-      cpyPiecePosition[2*+e[1]-+position[1]][2*+e[0]-+position[0]]=cpyPiecePosition[+position[1]][+position[0]]
-      cpyPiecePosition[+position[1]][+position[0]]=3;
-      cpyPiecePosition[e[1]][e[0]]=3;
-      
-     movePossible(String(2*+e[0]-+position[0])+String(2*+e[1]-+position[1]),true)
-    }else if(!!killMessage&&checkingMultikill){thinker.postMessage(killMessage);killMessage=''}
+      killMessage=`.${position}${2*+e[0]-+position[0]}${2*+e[1]-+position[1]}`;
+      thinker.postMessage(killMessage)
+      multikill(position,e,killMessage)
+    }
   });
  }
- 
+ function multikill(initial,j,message) {
+   let cpypiecePosition=JSON.parse(JSON.stringify(piecePosition));
+   cpp(j,3)
+   cpp(ap(initial,j),cpp(initial))
+   cpp(initial,3)
+ road[ap(initial,j)].forEach(p => {
+   if(mkill=cpp(p)==3-+cpp(ap(initial,j))&&cpp(ap(ap(initial,j),p))==3){
+     message+=ap(ap(initial,j),p)
+    thinker.postMessage(message)
+    multikill(ap(initial,j),p,message)
+   }
+ });
+ function cpp(coordinateString,value=undefined) {
+  if(value==undefined){return cpypiecePosition[coordinateString[1]][coordinateString[0]]}
+  cpypiecePosition[coordinateString[1]][coordinateString[0]]=value
+ };
+ }
  const thinker=new Worker('worker.js');
+function pp(coordinateString,value=undefined) {
+  if (value==undefined) {
+    return piecePosition[coordinateString[1]][coordinateString[0]]
+  }
+  piecePosition[coordinateString[1]][coordinateString[0]]=value
+};
+
+function ap(a1,a2) {//third term of ap
+  a1=String(a1)
+  a2=String(a2);
+  let a3= String(2*+a2[0]-+a1[0])+String(2*+a2[1]-+a1[1])
+  return a3
+}
