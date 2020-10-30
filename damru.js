@@ -36,28 +36,32 @@ let road={"11": [ "00", "21", "22"],
     let canKill=piecePosition[e[1]][e[0]]==3-piecePosition[+position[1]][+position[0]]&&piecePosition[2*+e[1]-+position[1]][2*+e[0]-+position[0]]==3
     if(canKill){
       killMessage=`.${position}${2*+e[0]-+position[0]}${2*+e[1]-+position[1]}`;
-      thinker.postMessage(killMessage)
-      multikill(position,e,killMessage)
+      thinker.postMessage(killMessage);
+      let cpypiecePosition=JSON.parse(JSON.stringify(piecePosition));
+      multikill(position,e,killMessage);    
+     
+      function multikill(initial,j,message) {
+        cpypiecePosition=JSON.parse(JSON.stringify(piecePosition))
+        executeMessage(message,cpp)
+        //  cpp(j,3)
+        //  cpp(ap(initial,j),cpp(initial))
+        //  cpp(initial,3)
+       road[ap(initial,j)].forEach(p => {
+         if(mkill=cpp(p)==3-+cpp(ap(initial,j))&&cpp(ap(ap(initial,j),p))==3){
+           message+=ap(ap(initial,j),p)
+          thinker.postMessage(message)
+          multikill(ap(initial,j),p,message)
+         }
+       });
+       function cpp(coordinateString,value=undefined) {
+        if(value==undefined){return cpypiecePosition[coordinateString[1]][coordinateString[0]]}
+        cpypiecePosition[coordinateString[1]][coordinateString[0]]=value
+       };
+       }
     }
   });
  }
- function multikill(initial,j,message) {
-   let cpypiecePosition=JSON.parse(JSON.stringify(piecePosition));
-   cpp(j,3)
-   cpp(ap(initial,j),cpp(initial))
-   cpp(initial,3)
- road[ap(initial,j)].forEach(p => {
-   if(mkill=cpp(p)==3-+cpp(ap(initial,j))&&cpp(ap(ap(initial,j),p))==3){
-     message+=ap(ap(initial,j),p)
-    thinker.postMessage(message)
-    multikill(ap(initial,j),p,message)
-   }
- });
- function cpp(coordinateString,value=undefined) {
-  if(value==undefined){return cpypiecePosition[coordinateString[1]][coordinateString[0]]}
-  cpypiecePosition[coordinateString[1]][coordinateString[0]]=value
- };
- }
+ 
  const thinker=new Worker('worker.js');
 function pp(coordinateString,value=undefined) {
   if (value==undefined) {
@@ -71,4 +75,15 @@ function ap(a1,a2) {//third term of ap
   a2=String(a2);
   let a3= String(2*+a2[0]-+a1[0])+String(2*+a2[1]-+a1[1])
   return a3
+}
+function executeMessage(mdata,targetArray=pp) {
+  mdata=mdata.replace('.','');
+ for(let n=0;n<mdata.length-3;n+=2){
+ let p1=mdata.slice(n,n+2);
+ let p2=mdata.slice(n+2,n+4);
+ targetArray(p2,pp(p1));
+ targetArray(p1,3)
+ let midPoint=`${(+p1[0]+(+p2[0]))/2}${(+p1[1]+(+p2[1]))/2}`
+ if(targetArray(midPoint)){targetArray(midPoint,3)}
+ }
 }
