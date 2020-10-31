@@ -40,17 +40,16 @@ let road={"11": [ "00", "21", "22"],
       let cpypiecePosition=JSON.parse(JSON.stringify(piecePosition));
       multikill(position,e,killMessage);    
      
-      function multikill(initial,j,message) {
-        cpypiecePosition=JSON.parse(JSON.stringify(piecePosition))
+      function multikill(initial,j,message) {//j is the opponents position
+        cpypiecePosition=JSON.parse(JSON.stringify(piecePosition));
+        if(message=='.0422'){debugger}
         executeMessage(message,cpp)
-        //  cpp(j,3)
-        //  cpp(ap(initial,j),cpp(initial))
-        //  cpp(initial,3)
        road[ap(initial,j)].forEach(p => {
+         if(ap(initial,j)=='22'&&p=='31'){debugger}
          if(mkill=cpp(p)==3-+cpp(ap(initial,j))&&cpp(ap(ap(initial,j),p))==3){
-           message+=ap(ap(initial,j),p)
-          thinker.postMessage(message)
-          multikill(ap(initial,j),p,message)
+           //message+=ap(ap(initial,j),p)
+          thinker.postMessage(message+ap(ap(initial,j),p))
+          multikill(ap(initial,j),p,message+ap(ap(initial,j),p))
          }
        });
        function cpp(coordinateString,value=undefined) {
@@ -77,11 +76,12 @@ function ap(a1,a2) {//third term of ap
   return a3
 }
 function executeMessage(mdata,targetArray=pp) {
+  
   mdata=mdata.replace('.','');
- for(let n=0;n<mdata.length-3;n+=2){
+ for(let n=0;n<mdata.length-2;n+=2){
  let p1=mdata.slice(n,n+2);
  let p2=mdata.slice(n+2,n+4);
- targetArray(p2,pp(p1));
+ targetArray(p2,targetArray(p1));
  targetArray(p1,3)
  let midPoint=`${(+p1[0]+(+p2[0]))/2}${(+p1[1]+(+p2[1]))/2}`
  if(targetArray(midPoint)){targetArray(midPoint,3)}
