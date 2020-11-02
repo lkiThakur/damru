@@ -42,10 +42,9 @@ let road={"11": [ "00", "21", "22"],
      
       function multikill(initial,j,message) {//j is the opponents position
         cpypiecePosition=JSON.parse(JSON.stringify(piecePosition));
-        if(message=='.0422'){debugger}
         executeMessage(message,cpp)
+        
        road[ap(initial,j)].forEach(p => {
-         if(ap(initial,j)=='22'&&p=='31'){debugger}
          if(mkill=cpp(p)==3-+cpp(ap(initial,j))&&cpp(ap(ap(initial,j),p))==3){
            //message+=ap(ap(initial,j),p)
           thinker.postMessage(message+ap(ap(initial,j),p))
@@ -59,6 +58,7 @@ let road={"11": [ "00", "21", "22"],
        }
     }
   });
+  thinker.postMessage('all moves sent')
  }
  
  const thinker=new Worker('worker.js');
